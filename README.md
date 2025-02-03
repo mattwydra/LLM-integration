@@ -9,15 +9,15 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 - **Objective:** Implement anime recommendations using a public API.
 - **Details:** Utilize the Jikan API to fetch anime data and provide recommendations based on user input.
 
-### Version 1.1 - Incorporate Movie Recommendations
-
-- **Objective:** Expand the application to include movie recommendations.
-- **Details:** Integrate the TMDB (The Movie Database) API to fetch movie data and provide recommendations.
-
-### Version 1.2 - Incorporate Game Recommendations
+### Version 1.1 - Incorporate Game Recommendations
 
 - **Objective:** Add game recommendations to the application.
 - **Details:** Use the RAWG API to fetch game data and provide user recommendations.
+
+### Version 1.2 - Incorporate Movie Recommendations
+
+- **Objective:** Expand the application to include movie recommendations.
+- **Details:** Integrate the TMDB (The Movie Database) API to fetch movie data and provide recommendations.
 
 ### Version 1.3 - Incorporate Show Recommendations
 
@@ -27,14 +27,19 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 ### Version 1.4 - Additional Recommendations
 
 - **Objective:** Expand the application to include other forms of media.
-- **Details:** Incorporate recommendations for books, manga, drawing inspiration, etc., using appropriate APIs or data sources.
+- **Details:** Incorporate other recommendations for media such as books, manga, drawing inspiration, etc., using appropriate APIs or data sources.
+
+### Version 1.x - Incorporate Additional Features
+
+- **Objective:** Expand the functionality of the application to include recommendations based on certain factors (genre, favorites, dislikes, online profiles (such as [mal profile](https://anime.plus)), etc.).
+
 
 ## Future Enhancements
 
 ### Version 2.0 and Beyond
 
 - **Objective:** Transition the backend to Cloudflare Workers for enhanced performance and scalability.
-- **Details:** Migrate API calls to be handled by Cloudflare Workers, ensuring secure handling of API keys and reducing client-side processing.
+- **Details:** Migrate API calls to be handled by Cloudflare Workers, ensuring secure handling of API keys and reducing client-side processing. Further, explain what each version is capable of (larger LLMs, better uptime, etc.), and allow for version selection.
 
 ## Setup and Installation
 
