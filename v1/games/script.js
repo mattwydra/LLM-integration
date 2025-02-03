@@ -1,3 +1,5 @@
+const STEAM_API_KEY = "47283DA8AB19ACC94182D16254E6BFC1"; // Replace with your actual Steam API key
+
 async function getRecommendations() {
     const gameName = document.getElementById("mediaInput").value;
     const resultsDiv = document.getElementById("results");
@@ -10,11 +12,10 @@ async function getRecommendations() {
     resultsDiv.innerHTML = "<p>Loading...</p>";
 
     try {
-        // Step 1: Fetch game details based on user input
         console.log("Fetching game details for:", gameName);
 
-        const searchResponse = await fetch(`https://api.rawg.io/api/games?key=a25dc7a8317948e2a14a436752f0d0ae&search=${gameName}`);
-
+        // Step 1: Get the game ID from Steam search
+        const searchResponse = await fetch(`https://store.steampowered.com/api/storesearch/?term=${gameName}&cc=us&l=en`);
         if (!searchResponse.ok) {
             throw new Error(`Search API request failed with status ${searchResponse.status}`);
         }
@@ -22,41 +23,33 @@ async function getRecommendations() {
         const searchData = await searchResponse.json();
         console.log("Search API response:", searchData);
 
-        if (!searchData.results || searchData.results.length === 0) {
+        if (!searchData.items || searchData.items.length === 0) {
             resultsDiv.innerHTML = "<p>No game found.</p>";
             return;
         }
 
-        const gameId = searchData.results[0].id; // Get the game ID
+        const gameId = searchData.items[0].id; // Get the Steam App ID
         console.log("Game ID found:", gameId);
 
-        // Step 2: Fetch recommended games based on the game ID
-        const recResponse = await fetch(`https://api.rawg.io/api/games/${gameId}/suggested?key=a25dc7a8317948e2a14a436752f0d0ae`);
+        // Step 2: Fetch recommended games (Steam has a "similar" endpoint)
+        const recResponse = await fetch(`https://store.steampowered.com/recommender/${gameId}/similar?key=${STEAM_API_KEY}`);
 
         if (!recResponse.ok) {
             throw new Error(`Recommendation API request failed with status ${recResponse.status}`);
         }
 
-        let recData;
+        const recData = await recResponse.json();
+        console.log("Recommendations API response:", recData);
 
-        try {
-            recData = await recResponse.json();
-            console.log("Recommendations API response:", recData);
-        } catch (error) {
-            console.error("Failed to parse JSON:", error);
-            resultsDiv.innerHTML = "<p>Failed to parse recommendations.</p>";
-            return;
-        }
-
-        if (!recData || !recData.results || recData.results.length === 0) {
+        if (!recData || !recData.similar || recData.similar.length === 0) {
             resultsDiv.innerHTML = "<p>No recommendations found.</p>";
             return;
         }
 
         // Step 3: Display recommendations
         resultsDiv.innerHTML = "<h2>Recommended Games:</h2>";
-        recData.results.slice(0, 5).forEach(rec => {
-            resultsDiv.innerHTML += `<p>${rec.name}</p>`;
+        recData.similar.slice(0, 5).forEach(rec => {
+            resultsDiv.innerHTML += `<p>${rec.name} - <a href="https://store.steampowered.com/app/${rec.id}/" target="_blank">View on Steam</a></p>`;
         });
 
     } catch (error) {
