@@ -4,7 +4,7 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 
 ## Project Versions
 
-### Version 1.0 - Anime Recommendations
+### Version 1.0 - [Anime Recommendations](https://mattwydra.github.io/LLM-integration/v1/anime/index.html)
 
 - **Objective:** Implement anime recommendations using a public API.
 - **Details:** Utilize the Jikan API to fetch anime data and provide recommendations based on user input.
@@ -41,7 +41,7 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/yourusername/anime-recommender.git
+   git clone https://github.com/mattwydra/LLM-integration.git
    cd anime-recommender
    ```
 
