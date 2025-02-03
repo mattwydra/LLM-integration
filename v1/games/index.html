@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Recommender</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <button class="toggle-btn" id="themeToggle">Toggle Dark/Light Mode</button>
+    <h1>Game Recommender</h1>
+    <input type="text" id="mediaInput" placeholder="Enter a title">
+    <button onclick="getRecommendations()">Get Recommendations</button>
+    <div id="results"></div>
+    <script src="script.js"></script>
+</body>
+<link rel="stylesheet" href="styles.css" />
+<script src="script.js"> </script>
+<script>
+    const themeToggle = document.getElementById("themeToggle");
+
+    themeToggle.addEventListener("click", () => {
+        const body = document.body;
+        const currentTheme = body.getAttribute("data-theme");
+
+        if (currentTheme === "light") {
+            body.setAttribute("data-theme", "dark");
+        } else {
+            body.setAttribute("data-theme", "light");
+        }
+    });
+</script>
+
+</html>
