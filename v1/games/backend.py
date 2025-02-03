@@ -8,7 +8,8 @@ app = Flask(__name__)
 CORS(app)
 
 # Load environment variables from the .env file
-load_dotenv("/LLM-integration/v1/secrets/games/.env")
+# "index.html"
+load_dotenv("../secrets/games/.env")
 
 # Replace these with your IGDB credentials
 CLIENT_ID = os.getenv("CLIENT_ID")

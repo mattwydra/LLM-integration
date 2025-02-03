@@ -9,17 +9,17 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 - **Objective:** Implement anime recommendations using a public API.
 - **Details:** Utilize the Jikan API to fetch anime data and provide recommendations based on user input.
 
-### Version 1.1 - Incorporate Game Recommendations
+### Version 1.1 - Incorporate [Game Recommendations](https://mattwydra.github.io/LLM-integration/v1/games/index.html)
 
 - **Objective:** Add game recommendations to the application.
 - **Details:** Use the RAWG API to fetch game data and provide user recommendations.
 
-### Version 1.2 - Incorporate Movie Recommendations
+### Version 1.2 - Incorporate Movie Recommendations (coming soon)
 
 - **Objective:** Expand the application to include movie recommendations.
 - **Details:** Integrate the TMDB (The Movie Database) API to fetch movie data and provide recommendations.
 
-### Version 1.3 - Incorporate Show Recommendations
+### Version 1.3 - Incorporate Show Recommendations (coming soon)
 
 - **Objective:** Enhance the application with show recommendations.
 - **Details:** Utilize the TV endpoints of the TMDB API to fetch show data and provide recommendations.
@@ -31,7 +31,7 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 
 ### Version 1.x - Incorporate Additional Features
 
-- **Objective:** Expand the functionality of the application to include recommendations based on certain factors (genre, favorites, dislikes, online profiles (such as [mal profile](https://anime.plus)), etc.).
+- **Objective:** Expand the functionality of the application to include recommendations based on certain factors (genre, favorites, dislikes, online profiles (such as [mal profile](https://anime.plus)), etc.). Further features may include: library uploads (steam, psn, etc.), game saving, advanced search, etc.
 
 
 ## Future Enhancements
