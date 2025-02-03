@@ -1,7 +1,7 @@
 async function getRecommendations() {
     const animeName = document.getElementById("animeInput").value;
     const resultsDiv = document.getElementById("results");
-    
+
     if (!animeName) {
         resultsDiv.innerHTML = "<p>Please enter an anime name.</p>";
         return;
@@ -13,18 +13,18 @@ async function getRecommendations() {
         // Fetch anime search results
         const searchResponse = await fetch(`https://api.jikan.moe/v4/anime?q=${animeName}&limit=1`);
         const searchData = await searchResponse.json();
-        
+
         if (searchData.data.length === 0) {
             resultsDiv.innerHTML = "<p>No anime found.</p>";
             return;
         }
 
         const animeId = searchData.data[0].mal_id; // Get the anime ID
-        
+
         // Fetch recommendations based on the anime ID
         const recResponse = await fetch(`https://api.jikan.moe/v4/anime/${animeId}/recommendations`);
         const recData = await recResponse.json();
-
+        
         if (recData.data.length === 0) {
             resultsDiv.innerHTML = "<p>No recommendations found.</p>";
             return;
@@ -41,3 +41,5 @@ async function getRecommendations() {
         console.error(error);
     }
 }
+
+
