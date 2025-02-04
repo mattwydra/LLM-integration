@@ -1,2 +1,3 @@
-C:\api_integration\LLM-integration\v1\secrets\games\.env
+secrets/games/.env
+secrets/movies/.env
 temp.txt
