@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Recommendations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: black;
+            color: lavenderblush;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin: 10px;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        img {
+            max-width: 200px;
+            border-radius: 10px;
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Game Recommendations</h1>
+    <input type="text" id="gameInput" placeholder="Enter a game name">
+    <button onclick="getRecommendations()">Get Recommendations</button>
+    <div id="results"></div>
+
+    <script>
+        async function getSteamAppId(gameName) {
+            const url = `https://steamcommunity.com/actions/SearchApps/${encodeURIComponent(gameName)}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            console.log("Steam Search Result:", data);
+            return data.length > 0 ? data[0].appid : null;
+        }
+
+        async function getGameTags(appId) {
+            const url = `https://store.steampowered.com/api/appdetails?appids=${appId}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (!data[appId].success) return null;
+            console.log("Game Details:", data);
+
+            return data[appId].data.genres.map(g => g.description);
+        }
+
+        async function getTopGamesByTag(tag) {
+            const url = `https://steamspy.com/api.php?request=tag&tag=${encodeURIComponent(tag)}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            return Object.values(data).slice(0, 5); // Get top 5 games
+        }
+
+        async function getRecommendations() {
+            const gameName = document.getElementById("gameInput").value;
+            const resultsDiv = document.getElementById("results");
+
+            if (!gameName) {
+                resultsDiv.innerHTML = "<p>Please enter a game name.</p>";
+                return;
+            }
+
+            resultsDiv.innerHTML = "<p>Loading...</p>";
+
+            const appId = await getSteamAppId(gameName);
+            if (!appId) {
+                resultsDiv.innerHTML = "<p>Game not found.</p>";
+                return;
+            }
+
+            const tags = await getGameTags(appId);
+            if (!tags || tags.length === 0) {
+                resultsDiv.innerHTML = "<p>No genre/tag data found.</p>";
+                return;
+            }
+
+            const recommendations = await getTopGamesByTag(tags[0]); // Use the first tag
+            resultsDiv.innerHTML = `<h2>Recommended Games Based on ${tags[0]}</h2>`;
+
+            recommendations.forEach(game => {
+                resultsDiv.innerHTML += `
+                    <p><strong>${game.name}</strong> (Players: ${game.owners})</p>
+                    <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/capsule_184x69.jpg" alt="${game.name}">
+                `;
+            });
+        }
+    </script>
+</body>
+
+</html>
