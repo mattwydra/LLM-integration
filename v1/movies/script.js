@@ -1,4 +1,10 @@
-const API_KEY = "API_KEY";  // Replace manually when testing
+// require('dotenv').config();
+// const API_KEY = process.env.MY_KEY
+
+// const API_KEY = "API_KEY";  // Replace manually when testing
+const API_KEY = "KEY";
+const BASE_URL = 'https://api.themoviedb.org/3';
+const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 async function getMovieId(movieName) {
     const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(movieName)}`;
@@ -35,6 +41,12 @@ async function getRecommendations() {
 
     resultsDiv.innerHTML = "<h2>Recommended Movies:</h2>";
     data.results.slice(0, 5).forEach(movie => {
-        resultsDiv.innerHTML += `<p><strong>${movie.title}</strong> (Rating: ${movie.vote_average})</p>`;
+        resultsDiv.innerHTML += `
+                        <div>
+                            <h3>${movie.name}</h3>
+                            <img src="${IMG_BASE_URL + movie.poster_path}" alt="${movie.name}">
+                            <p>${movie.overview}</p>
+                        </div>
+                    `;
     });
 }
