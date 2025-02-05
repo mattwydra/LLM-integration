@@ -5,93 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TV Show Recommendations</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background-color: black;
-            color: lavenderblush;
-        }
-
-        input,
-        button {
-            padding: 10px;
-            margin: 10px;
-        }
-
-        #results {
-            margin-top: 20px;
-        }
-
-        img {
-            max-width: 200px;
-            border-radius: 10px;
-            margin: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
+    <button class="toggle-btn" id="themeToggle">Toggle Dark/Light Mode</button>
     <h1>TV Show Recommendations</h1>
     <input type="text" id="showInput" placeholder="Enter a TV show">
     <button onclick="getRecommendations()">Get Recommendations</button>
     <div id="results"></div>
 
+    <script src="script.js"> </script>
     <script>
-        const API_KEY = "KEY"; // Replace with your actual TMDb API key
-        const BASE_URL = 'https://api.themoviedb.org/3';
-        const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+        const themeToggle = document.getElementById("themeToggle");
 
-        async function getTVShowId(showName) {
-            const url = `${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(showName)}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            return data.results.length > 0 ? data.results[0] : null;
-        }
+        themeToggle.addEventListener("click", () => {
+            const body = document.body;
+            const currentTheme = body.getAttribute("data-theme");
 
-        async function getRecommendations() {
-            const showName = document.getElementById("showInput").value;
-            const resultsDiv = document.getElementById("results");
-
-            if (!showName) {
-                resultsDiv.innerHTML = "<p>Please enter a TV show name.</p>";
-                return;
+            if (currentTheme === "light") {
+                body.setAttribute("data-theme", "dark");
+            } else {
+                body.setAttribute("data-theme", "light");
             }
-
-            resultsDiv.innerHTML = "<p>Loading...</p>";
-
-            try {
-                const show = await getTVShowId(showName);
-                if (!show) {
-                    resultsDiv.innerHTML = "<p>No TV show found.</p>";
-                    return;
-                }
-
-                const recUrl = `${BASE_URL}/tv/${show.id}/recommendations?api_key=${API_KEY}`;
-                const recResponse = await fetch(recUrl);
-                const recData = await recResponse.json();
-
-                if (recData.results.length === 0) {
-                    resultsDiv.innerHTML = "<p>No recommendations found.</p>";
-                    return;
-                }
-
-                resultsDiv.innerHTML = `<h2>Recommended Shows for: ${show.name}</h2>`;
-                recData.results.slice(0, 5).forEach(rec => {
-                    resultsDiv.innerHTML += `
-                        <div>
-                            <h3>${rec.name}</h3>
-                            <img src="${IMG_BASE_URL + rec.poster_path}" alt="${rec.name}">
-                            <p>${rec.overview}</p>
-                        </div>
-                    `;
-                });
-            } catch (error) {
-                resultsDiv.innerHTML = "<p>Failed to fetch recommendations. Try again later.</p>";
-                console.error("Error fetching recommendations:", error);
-            }
-        }
+        });
     </script>
 </body>
 
