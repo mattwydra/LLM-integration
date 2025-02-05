@@ -39,34 +39,7 @@
     <div id="results"></div>
 
     <script>
-        async function getSteamAppId(gameName) {
-            const url = `https://steamcommunity.com/actions/SearchApps/${encodeURIComponent(gameName)}`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            console.log("Steam Search Result:", data);
-            return data.length > 0 ? data[0].appid : null;
-        }
-
-        async function getGameTags(appId) {
-            const url = `https://store.steampowered.com/api/appdetails?appids=${appId}`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (!data[appId].success) return null;
-            console.log("Game Details:", data);
-
-            return data[appId].data.genres.map(g => g.description);
-        }
-
-        async function getTopGamesByTag(tag) {
-            const url = `https://steamspy.com/api.php?request=tag&tag=${encodeURIComponent(tag)}`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            return Object.values(data).slice(0, 5); // Get top 5 games
-        }
-
+        // Function to fetch game recommendations based on a game name
         async function getRecommendations() {
             const gameName = document.getElementById("gameInput").value;
             const resultsDiv = document.getElementById("results");
@@ -78,28 +51,38 @@
 
             resultsDiv.innerHTML = "<p>Loading...</p>";
 
-            const appId = await getSteamAppId(gameName);
-            if (!appId) {
-                resultsDiv.innerHTML = "<p>Game not found.</p>";
-                return;
+            try {
+                // Fetch the game list from the hosted JSON file on GitHub
+                const response = await fetch("https://raw.githubusercontent.com/mattwydra/LLM-integration/main/steam_games.json");
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Game Data:", data);
+
+                // Find the game by name from the JSON data
+                const game = data.applist.apps.find(game => game.name.toLowerCase().includes(gameName.toLowerCase()));
+                if (!game) {
+                    resultsDiv.innerHTML = "<p>No game found.</p>";
+                    return;
+                }
+
+                // Display the game details
+                resultsDiv.innerHTML = `<h2>Game Details:</h2>
+                <p><strong>Name:</strong> ${game.name}</p>
+                <p><strong>Steam ID:</strong> ${game.appid}</p>`;
+
+                // Optionally, fetch and display related games here
+                // Example code for related games can be added below
+
+            } catch (error) {
+                resultsDiv.innerHTML = "<p>Failed to fetch recommendations. Try again later.</p>";
+                console.error("Error in getRecommendations:", error);
             }
-
-            const tags = await getGameTags(appId);
-            if (!tags || tags.length === 0) {
-                resultsDiv.innerHTML = "<p>No genre/tag data found.</p>";
-                return;
-            }
-
-            const recommendations = await getTopGamesByTag(tags[0]); // Use the first tag
-            resultsDiv.innerHTML = `<h2>Recommended Games Based on ${tags[0]}</h2>`;
-
-            recommendations.forEach(game => {
-                resultsDiv.innerHTML += `
-                    <p><strong>${game.name}</strong> (Players: ${game.owners})</p>
-                    <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/capsule_184x69.jpg" alt="${game.name}">
-                `;
-            });
         }
+
     </script>
 </body>
 
