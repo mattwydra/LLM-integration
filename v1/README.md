@@ -1,6 +1,6 @@
 # Media Recommendation Services - Version 1.4
 
-This repository contains the **first implementations** of various media recommendation services, covering **[anime](/v1/anime/README.md), [movies](/v1/movies/README.md), [TV shows](/v1/shows/README.md), and [games](/v1/games/README.md)**. These projects use different APIs to fetch recommendations based on user input and are designed to work with only **HTML, CSS, and JavaScript** (no backend required).
+This repository contains the **first implementations** of various media recommendation services, covering **[anime](/v1/anime/README.md), [movies](/v1/movies/README.md), [TV shows](/v1/shows/README.md), and [games](/v1/games/README.md)**. These projects use different APIs to fetch recommendations based on user input with the goal to work with only **HTML, CSS, and JavaScript** (no backend required). However, this has proven somewhat difficult (hopefully not impossible), so other solutions may be necessary.
 
 ## Overview
 Each recommendation service allows users to enter a title and receive related recommendations based on that media type. The current implementations focus on retrieving basic data and presenting it in a user-friendly format.
