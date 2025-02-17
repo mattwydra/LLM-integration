@@ -14,7 +14,7 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 - **Objective:** Add game recommendations to the application.
 - **Details:** Use the RAWG API to fetch game data and provide user recommendations.
 
-### Version 1.2 - Incorporate Movie Recommendations (coming soon)
+### Version 1.2 - Incorporate [Movie Recommendations](https://mattwydra.github.io/LLM-integration/v1/movies/index.html) (Partial Implementation)
 
 - **Objective:** Expand the application to include movie recommendations.
 - **Details:** Integrate the TMDB (The Movie Database) API to fetch movie data and provide recommendations.
