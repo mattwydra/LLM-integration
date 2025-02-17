@@ -19,7 +19,7 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 - **Objective:** Expand the application to include movie recommendations.
 - **Details:** Integrate the TMDB (The Movie Database) API to fetch movie data and provide recommendations.
 
-### Version 1.3 - Incorporate Show Recommendations (coming soon)
+### Version 1.3 - Incorporate [Show Recommendations](https://mattwydra.github.io/LLM-integration/v1/anime/index.html) (Partial Implementation)
 
 - **Objective:** Enhance the application with show recommendations.
 - **Details:** Utilize the TV endpoints of the TMDB API to fetch show data and provide recommendations.
