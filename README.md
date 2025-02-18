@@ -36,9 +36,8 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 
 ## Future Enhancements
 
-### Version 2.0 and Beyond
-
-- **Objective:** Transition the backend to Cloudflare Workers for enhanced performance and scalability.
+### Version 2.0-2.4:
+- **Objective:** Incorporate hosting with cloud-based service
 - **Details:** Migrate API calls to be handled by Cloudflare Workers, ensuring secure handling of API keys and reducing client-side processing. Further, explain what each version is capable of (larger LLMs, better uptime, etc.), and allow for version selection.
 
 ## Setup and Installation
