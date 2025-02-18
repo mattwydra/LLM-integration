@@ -40,6 +40,10 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 - **Objective:** Incorporate hosting with cloud-based service
 - **Details:** Migrate API calls to be handled by Cloudflare Workers, ensuring secure handling of API keys and reducing client-side processing. Further, explain what each version is capable of (larger LLMs, better uptime, etc.), and allow for version selection.
 
+### Version 3.0-3.4:
+- **Objective:** Incorporate local hosting for better uptimes
+- **Details:** API Calls will be handled by my local machine for more permanent uptime
+
 ## Setup and Installation
 
 1. **Clone the Repository:**
