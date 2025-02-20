@@ -5,6 +5,9 @@ on:
     branches:
       - main  # Or use your specific branch
 
+permissions:
+  contents: write  # Grant permission to write to repository contents
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
