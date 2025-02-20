@@ -16,8 +16,8 @@ jobs:
     - name: Replace API_KEY in script.js
       run: |
         # Replace 'API_KEY' in both script.js files with the value from GitHub Secrets
-        sed -i 's/const API_KEY = "API_KEY";/const API_KEY = "${{ secrets.MY_API_KEY }}";/' ../../v1/movies/script.js
-        sed -i 's/const API_KEY = "API_KEY";/const API_KEY = "${{ secrets.MY_API_KEY }}";/' ../../v1/shows/script.js
+        sed -i 's/const API_KEY = "API_KEY";/const API_KEY = "${{ secrets.MY_API_KEY }}";/' v1/movies/script.js
+        sed -i 's/const API_KEY = "API_KEY";/const API_KEY = "${{ secrets.MY_API_KEY }}";/' v1/shows/script.js
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
