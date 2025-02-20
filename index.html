@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Media Recommendations</title>
+    <style>
+        body {
+            background-color: black;
+            color: aliceblue;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body[data-theme="light"] {
+            background-color: lavender;
+            color: black;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        .media-link {
+            display: inline-block;
+            margin: 15px;
+            padding: 10px 20px;
+            background-color: rosybrown;
+            color: aliceblue;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+
+        body[data-theme="light"] .media-link {
+            background-color: lightgray;
+            color: black;
+        }
+
+        .media-link:hover {
+            background-color: lavenderblush;
+            color: darksalmon;
+        }
+
+        body[data-theme="light"] .media-link:hover {
+            background-color: plum;
+            color: lavender;
+        }
+
+        .toggle-btn {
+            margin: 20px;
+            padding: 10px 15px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: darkgray;
+            color: black;
+        }
+
+        body[data-theme="light"] .toggle-btn {
+            background-color: gray;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Choose Media type</h1>
+    <button class="toggle-btn" id="themeToggle">Toggle Dark/Light Mode</button>
+    <div>
+        <a href="anime.html" class="media-link">anime recs</a>
+    </div>
+    <div>
+        <a href="games.html" class="media-link">(may require setup) game recs</a>
+    </div>
+    <div>
+        <a href="movies.html" class="media-link">(coming soon) movie recs</a>
+    </div>
+    <div>
+        <a href="shows.html" class="media-link">(coming soon) show recs</a>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById("themeToggle");
+
+        themeToggle.addEventListener("click", () => {
+            const body = document.body;
+            const currentTheme = body.getAttribute("data-theme");
+
+            if (currentTheme === "light") {
+                body.setAttribute("data-theme", "dark");
+            } else {
+                body.setAttribute("data-theme", "light");
+            }
+        });
+    </script>
+</body>
+
+</html>

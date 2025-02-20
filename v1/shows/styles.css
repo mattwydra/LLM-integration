@@ -1,0 +1,77 @@
+body {
+    background-color: black;
+    color: aliceblue;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+img {
+    max-width: 200px;
+    border-radius: 10px;
+    margin: 10px;
+}
+
+body[data-theme="light"] {
+    background-color: lavender;
+    color: black;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body[data-theme="light"]input {
+    padding: 8px;
+    width: 250px;
+}
+
+input {
+    padding: 8px;
+    width: 250px;
+}
+
+body[data-theme="light"]button {
+    padding: 8px;
+    margin-left: 10px;
+}
+
+button {
+    padding: 8px;
+    margin-left: 10px;
+}
+
+body[data-theme="light"]#results {
+    margin-top: 20px;
+}
+
+#results {
+    margin-top: 20px;
+}
+
+body[data-theme="light"]h1 {
+    margin-top: 20px;
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+.toggle-btn {
+    margin: 20px;
+    padding: 10px 15px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: darkgray;
+    color: black;
+}
+
+body[data-theme="light"] .toggle-btn {
+    background-color: gray;
+    color: white;
+}
