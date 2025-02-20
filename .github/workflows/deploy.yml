@@ -26,4 +26,4 @@ jobs:
         user_name: 'github-actions'
         user_email: 'github-actions@users.noreply.github.com'
         publish_branch: gh-pages  # Branch to push the changes to
-        token: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
+        github_token: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
