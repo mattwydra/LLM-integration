@@ -3,32 +3,30 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Trigger this action on pushes to the main branch
+      - main  # Or use your specific branch
+
+permissions:
+  contents: write  # Grant permission to write to repository contents
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Node.js (or your project framework)
-      uses: actions/setup-node@v3
-      with:
-        node-version: '14'  # Adjust if you use a different version
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build the site
+    - name: Replace API_KEY in script.js
       run: |
-        echo "REACT_APP_API_KEY=${{ secrets.MY_API_KEY }}" > .env
-        npm run build  # Adjust this based on your build process
+        # Replace 'API_KEY' in both script.js files with the value from GitHub Secrets
+        sed -i 's/const API_KEY = "API_KEY";/const API_KEY = "${{ secrets.MY_API_KEY }}";/' v1/movies/script.js
+        sed -i 's/const API_KEY = "API_KEY";/const API_KEY = "${{ secrets.MY_API_KEY }}";/' v1/shows/script.js
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        publish_dir: ./build  # Or wherever your build output is
+        publish_dir: ./  # This is where your static files are located
         user_name: 'github-actions'
         user_email: 'github-actions@users.noreply.github.com'
+        publish_branch: gh-pages  # Branch to push the changes to
+        github_token: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
