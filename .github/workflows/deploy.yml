@@ -25,3 +25,5 @@ jobs:
         publish_dir: ./  # This is where your static files are located
         user_name: 'github-actions'
         user_email: 'github-actions@users.noreply.github.com'
+        publish_branch: gh-pages  # Branch to push the changes to
+        token: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
