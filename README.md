@@ -6,25 +6,21 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 
 ### Version 1.0 - [Anime Recommendations](https://mattwydra.github.io/LLM-integration/v1/anime/index.html)
 
-- **Important Info:** Works 100% of the time; no backend or api key required
 - **Objective:** Implement anime recommendations using a public API.
 - **Details:** Utilize the Jikan API to fetch anime data and provide recommendations based on user input.
 
 ### Version 1.1 - Incorporate [Game Recommendations](https://mattwydra.github.io/LLM-integration/v1/games/index.html)
 
-- **Important Info:** Only works when backend is running
 - **Objective:** Add game recommendations to the application.
 - **Details:** Use the RAWG API to fetch game data and provide user recommendations.
 
-### Version 1.2 - [Incorporate Movie Recommendations](https://mattwydra.github.io/LLM-integration/v1/movies/index.html) (coming soon)
+### Version 1.2 - Incorporate [Movie Recommendations](https://mattwydra.github.io/LLM-integration/v1/movies/index.html) (Partial Implementation)
 
-- **Important Info:** API key required; does not function due to security risks.
 - **Objective:** Expand the application to include movie recommendations.
 - **Details:** Integrate the TMDB (The Movie Database) API to fetch movie data and provide recommendations.
 
-### Version 1.3 - [Incorporate Show Recommendations](https://mattwydra.github.io/LLM-integration/v1/shows/index.html) (coming soon)
+### Version 1.3 - Incorporate [Show Recommendations](https://mattwydra.github.io/LLM-integration/v1/anime/index.html) (Partial Implementation)
 
-- **Important Info:** API key required; does not function due to security risks.
 - **Objective:** Enhance the application with show recommendations.
 - **Details:** Utilize the TV endpoints of the TMDB API to fetch show data and provide recommendations.
 
@@ -40,10 +36,18 @@ A [web application](https://mattwydra.github.io/LLM-integration/) that provides 
 
 ## Future Enhancements
 
-### Version 2.0 and Beyond
-
-- **Objective:** Transition the backend to Cloudflare Workers for enhanced performance and scalability.
+### Version 2.0-2.4:
+- **Objective:** Incorporate hosting with cloud-based service.
 - **Details:** Migrate API calls to be handled by Cloudflare Workers, ensuring secure handling of API keys and reducing client-side processing. Further, explain what each version is capable of (larger LLMs, better uptime, etc.), and allow for version selection.
+
+### Version 3.0-3.4:
+- **Objective:** Incorporate local hosting for better uptimes.
+- **Details:** API Calls will be handled by my local machine for more permanent uptime.
+
+### Version 4.0-4.4:
+- **Objective:** Attempt serverless implementation.
+- **Details:** Attempt conversion of the LLM to WebAssembly (WASM) and run entirely in the browser.
+   - I'm not sure if this is possible, but will be fun to try.
 
 ## Setup and Installation
 
