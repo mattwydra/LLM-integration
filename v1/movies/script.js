@@ -1,13 +1,9 @@
-// require('dotenv').config();
-// const API_KEY = process.env.MY_KEY
-
-// const API_KEY = "API_KEY";  // Replace manually when testing
-const API_KEY = "KEY";
-const BASE_URL = 'https://api.themoviedb.org/3';
+// movies/script.js
+const BASE_URL = '/api/tmdb-proxy';
 const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 async function getMovieId(movieName) {
-    const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(movieName)}`;
+    const url = `${BASE_URL}/search/movie?query=${encodeURIComponent(movieName)}`;
     const response = await fetch(url);
     const data = await response.json();
     return data.results.length > 0 ? data.results[0].id : null;
@@ -24,29 +20,35 @@ async function getRecommendations() {
 
     resultsDiv.innerHTML = "<p>Loading...</p>";
 
-    const movieId = await getMovieId(movieName);
-    if (!movieId) {
-        resultsDiv.innerHTML = "<p>Movie not found.</p>";
-        return;
+    try {
+        const movieId = await getMovieId(movieName);
+        if (!movieId) {
+            resultsDiv.innerHTML = "<p>Movie not found.</p>";
+            return;
+        }
+
+        const recommendUrl = `${BASE_URL}/movie/${movieId}/recommendations`;
+        const response = await fetch(recommendUrl);
+        const data = await response.json();
+
+        if (data.results.length === 0) {
+            resultsDiv.innerHTML = "<p>No recommendations found.</p>";
+            return;
+        }
+
+        resultsDiv.innerHTML = "<h2>Recommended Movies:</h2>";
+        data.results.slice(0, 5).forEach(movie => {
+            // Fix: Using title instead of name for movies
+            resultsDiv.innerHTML += `
+                <div>
+                    <h3>${movie.title || movie.name}</h3>
+                    <img src="${IMG_BASE_URL + movie.poster_path}" alt="${movie.title || movie.name}">
+                    <p>${movie.overview}</p>
+                </div>
+            `;
+        });
+    } catch (error) {
+        resultsDiv.innerHTML = "<p>Failed to fetch recommendations. Try again later.</p>";
+        console.error("Error fetching recommendations:", error);
     }
-
-    const recommendUrl = `https://api.themoviedb.org/3/movie/${movieId}/recommendations?api_key=${API_KEY}`;
-    const response = await fetch(recommendUrl);
-    const data = await response.json();
-
-    if (data.results.length === 0) {
-        resultsDiv.innerHTML = "<p>No recommendations found.</p>";
-        return;
-    }
-
-    resultsDiv.innerHTML = "<h2>Recommended Movies:</h2>";
-    data.results.slice(0, 5).forEach(movie => {
-        resultsDiv.innerHTML += `
-                        <div>
-                            <h3>${movie.name}</h3>
-                            <img src="${IMG_BASE_URL + movie.poster_path}" alt="${movie.name}">
-                            <p>${movie.overview}</p>
-                        </div>
-                    `;
-    });
 }
