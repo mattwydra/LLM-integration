@@ -8,14 +8,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
+      # Use the official Netlify CLI action
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+        
       - name: Deploy to Netlify
-        uses: netlify/actions/cli@master
+        run: netlify deploy --dir=v1 --functions=functions --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           MY_API_KEY: ${{ secrets.MY_API_KEY }}
-        with:
-          args: deploy --dir=v1 --functions=functions --prod
-          secrets: '["MY_API_KEY"]'
