@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyAnimeList Analyzer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .anime-card {
+            transition: transform 0.3s ease;
+        }
+
+        .anime-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto p-4">
+        <header class="bg-blue-600 text-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold">MyAnimeList Analyzer</h1>
+            <p class="mt-2">Powered by Jikan API</p>
+        </header>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-bold mb-4">Enter Your MAL Username</h2>
+            <div class="flex flex-col md:flex-row gap-4">
+                <input type="text" id="username" class="border border-gray-300 rounded-lg p-2 flex-grow"
+                    placeholder="MyAnimeList Username">
+                <button id="analyze"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition">
+                    Analyze Profile
+                </button>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden flex justify-center items-center flex-col p-10">
+            <div class="loading mb-4"></div>
+            <p class="text-lg">Fetching and analyzing your anime data...</p>
+            <p class="text-sm text-gray-500 mt-2">This might take a while depending on the size of your list</p>
+        </div>
+
+        <div id="results" class="hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <h2 class="text-2xl font-bold mb-6" id="username-display"></h2>
+
+                <!-- Recently Watched Section -->
+                <section class="mb-10">
+                    <h3 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">Recently Watched</h3>
+                    <div id="recently-watched"
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+                </section>
+
+                <!-- Top Genres Section (Feature 1) -->
+                <section class="mb-10">
+                    <h3 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">Top 5 Most Watched Genres</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div id="genre-stats" class="mb-4"></div>
+                        <div id="genre-chart" class="h-64"></div>
+                    </div>
+                </section>
+
+                <!-- Perfect Scores Section (Feature 2) -->
+                <section class="mb-10">
+                    <h3 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">Shows Rated 10/10</h3>
+                    <div id="perfect-shows" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    </div>
+                </section>
+
+                <!-- Top Shows by Genre Section (Feature 3) -->
+                <section class="mb-10">
+                    <h3 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">Top Shows by Genre</h3>
+                    <div class="mb-4">
+                        <label for="genre-selector" class="block text-sm font-medium text-gray-700 mb-2">Select a
+                            genre:</label>
+                        <select id="genre-selector" class="border border-gray-300 rounded-lg p-2 w-full">
+                            <option value="">Choose a genre</option>
+                        </select>
+                    </div>
+                    <div id="genre-showcase"
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+                </section>
+
+                <!-- Recommendations Section (Additional Feature) -->
+                <section class="mb-10">
+                    <h3 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">Personalized Recommendations</h3>
+                    <div id="recommendations"
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+                </section>
+            </div>
+        </div>
+
+        <div id="error" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8 rounded"></div>
+
+        <footer class="text-center text-gray-500 py-4">
+            <p>Data provided by Jikan API. This site is not affiliated with MyAnimeList.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        // MAL Analyzer using Jikan API
+        // This program fetches and analyzes a user's MyAnimeList data
+
+        class MALAnalyzer {
+            constructor(username) {
+                this.username = username;
+                this.animeList = [];
+                this.baseUrl = "https://api.jikan.moe/v4";
+            }
+
+            // Fetch all anime for a user
+            async fetchUserAnimeList() {
+                try {
+                    let hasNextPage = true;
+                    let page = 1;
+                    let allAnime = [];
+
+                    // Jikan API has pagination, so we need to fetch all pages
+                    while (hasNextPage) {
+                        console.log(`Fetching page ${page} of anime list...`);
+                        const response = await fetch(`${this.baseUrl}/users/${this.username}/animelist?page=${page}`);
+
+                        // Respect API rate limits (4 requests per second)
+                        await new Promise(resolve => setTimeout(resolve, 250));
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch data: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+                        allAnime = [...allAnime, ...data.data];
+
+                        // Check if there are more pages
+                        hasNextPage = data.pagination.has_next_page;
+                        page++;
+                    }
+
+                    this.animeList = allAnime;
+                    console.log(`Successfully fetched ${this.animeList.length} anime entries.`);
+                    return this.animeList;
+                } catch (error) {
+                    console.error("Error fetching anime list:", error);
+                    throw error;
+                }
+            }
+
+            // Feature 1: Get top 5 most-watched genres
+            getMostWatchedGenres() {
+                const genreCounts = {};
+
+                // Count occurrences of each genre
+                this.animeList.forEach(entry => {
+                    const anime = entry.node;
+                    if (anime.genres) {
+                        anime.genres.forEach(genre => {
+                            const genreName = genre.name;
+                            genreCounts[genreName] = (genreCounts[genreName] || 0) + 1;
+                        });
+                    }
+                });
+
+                // Sort genres by count and get top 5
+                const sortedGenres = Object.entries(genreCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
+                    .map(([genre, count]) => ({ genre, count }));
+
+                return sortedGenres;
+            }
+
+            // Feature 2: Get all shows with a rating of 10
+            getPerfectlyRatedShows() {
+                return this.animeList
+                    .filter(entry => entry.list_status.score === 10)
+                    .map(entry => ({
+                        title: entry.node.title,
+                        image: entry.node.main_picture?.medium,
+                        url: entry.node.url,
+                        genres: entry.node.genres?.map(g => g.name) || [],
+                        score: entry.list_status.score
+                    }));
+            }
+
+            // Feature 3: Get top 5 ranked shows from top 10 most-watched genres
+            async getTopShowsByGenres() {
+                try {
+                    // Get top 10 genres
+                    const genreCounts = {};
+                    this.animeList.forEach(entry => {
+                        const anime = entry.node;
+                        if (anime.genres) {
+                            anime.genres.forEach(genre => {
+                                const genreName = genre.name;
+                                genreCounts[genreName] = (genreCounts[genreName] || 0) + 1;
+                            });
+                        }
+                    });
+
+                    const top10Genres = Object.entries(genreCounts)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 10)
+                        .map(([genre]) => genre);
+
+                    // For each genre, get top 5 shows
+                    const result = {};
+
+                    for (const genre of top10Genres) {
+                        // Need to get the genre ID first
+                        const genreSearchResponse = await fetch(`${this.baseUrl}/genres/anime?q=${encodeURIComponent(genre)}`);
+                        await new Promise(resolve => setTimeout(resolve, 250)); // Respect rate limit
+
+                        if (!genreSearchResponse.ok) {
+                            console.warn(`Could not find genre ID for ${genre}`);
+                            continue;
+                        }
+
+                        const genreData = await genreSearchResponse.json();
+                        const genreId = genreData.data.find(g => g.name === genre)?.mal_id;
+
+                        if (!genreId) {
+                            console.warn(`Could not find genre ID for ${genre}`);
+                            continue;
+                        }
+
+                        // Now get top anime for this genre
+                        const topAnimeResponse = await fetch(`${this.baseUrl}/anime?genres=${genreId}&order_by=score&sort=desc&limit=5`);
+                        await new Promise(resolve => setTimeout(resolve, 250)); // Respect rate limit
+
+                        if (!topAnimeResponse.ok) {
+                            console.warn(`Failed to fetch top anime for genre ${genre}`);
+                            continue;
+                        }
+
+                        const topAnimeData = await topAnimeResponse.json();
+                        result[genre] = topAnimeData.data.map(anime => ({
+                            title: anime.title,
+                            score: anime.score,
+                            image: anime.images?.jpg?.image_url,
+                            url: anime.url,
+                            episodes: anime.episodes
+                        }));
+                    }
+
+                    return {
+                        topGenres: top10Genres,
+                        showsByGenre: result
+                    };
+                } catch (error) {
+                    console.error("Error fetching top shows by genre:", error);
+                    throw error;
+                }
+            }
+
+            // Additional Feature: Get personalized recommendations based on user's top rated genres
+            async getPersonalizedRecommendations() {
+                try {
+                    // Get user's top 3 genres
+                    const topGenres = this.getMostWatchedGenres().slice(0, 3).map(g => g.genre);
+
+                    // Get list of anime IDs the user has already watched
+                    const watchedIds = new Set(this.animeList.map(entry => entry.node.id));
+
+                    const recommendations = [];
+
+                    for (const genre of topGenres) {
+                        // Search for genre ID
+                        const genreSearchResponse = await fetch(`${this.baseUrl}/genres/anime?q=${encodeURIComponent(genre)}`);
+                        await new Promise(resolve => setTimeout(resolve, 250)); // Respect rate limit
+
+                        if (!genreSearchResponse.ok) continue;
+
+                        const genreData = await genreSearchResponse.json();
+                        const genreId = genreData.data.find(g => g.name === genre)?.mal_id;
+
+                        if (!genreId) continue;
+
+                        // Get top-rated anime for this genre that the user hasn't watched
+                        const animeResponse = await fetch(`${this.baseUrl}/anime?genres=${genreId}&order_by=score&sort=desc&limit=10`);
+                        await new Promise(resolve => setTimeout(resolve, 250)); // Respect rate limit
+
+                        if (!animeResponse.ok) continue;
+
+                        const animeData = await animeResponse.json();
+
+                        // Filter out already watched shows and add to recommendations
+                        const genreRecs = animeData.data
+                            .filter(anime => !watchedIds.has(anime.mal_id))
+                            .slice(0, 3)
+                            .map(anime => ({
+                                title: anime.title,
+                                score: anime.score,
+                                image: anime.images?.jpg?.image_url,
+                                url: anime.url,
+                                genres: anime.genres?.map(g => g.name) || []
+                            }));
+
+                        recommendations.push(...genreRecs);
+                    }
+
+                    // Return top 10 unique recommendations sorted by score
+                    return [...new Map(recommendations.map(item => [item.title, item])).values()]
+                        .sort((a, b) => b.score - a.score)
+                        .slice(0, 10);
+                } catch (error) {
+                    console.error("Error getting personalized recommendations:", error);
+                    throw error;
+                }
+            }
+
+            // Utility method to get user's recently watched anime
+            getRecentlyWatched(limit = 5) {
+                return this.animeList
+                    .sort((a, b) => new Date(b.list_status.updated_at) - new Date(a.list_status.updated_at))
+                    .slice(0, limit)
+                    .map(entry => ({
+                        title: entry.node.title,
+                        score: entry.list_status.score,
+                        image: entry.node.main_picture?.medium,
+                        lastUpdated: entry.list_status.updated_at
+                    }));
+            }
+        }
+
+        // Helper function to create anime cards
+        function createAnimeCard(anime) {
+            const card = document.createElement('div');
+            card.className = 'anime-card bg-white rounded-lg shadow overflow-hidden';
+
+            const imageUrl = anime.image || '/api/placeholder/150/225';
+
+            card.innerHTML = `
+        <div class="relative pb-[150%]">
+          <img src="${imageUrl}" alt="${anime.title}" class="absolute inset-0 w-full h-full object-cover">
+          ${anime.score ? `<span class="absolute top-0 right-0 bg-yellow-400 text-black font-bold px-2 py-1">${anime.score}</span>` : ''}
+        </div>
+        <div class="p-3">
+          <h4 class="font-semibold text-sm mb-1 line-clamp-2" title="${anime.title}">${anime.title}</h4>
+          ${anime.genres ? `<p class="text-xs text-gray-600 line-clamp-2">${anime.genres.join(', ')}</p>` : ''}
+          ${anime.episodes ? `<p class="text-xs mt-1">Episodes: ${anime.episodes}</p>` : ''}
+        </div>
+      `;
+
+            if (anime.url) {
+                card.addEventListener('click', () => {
+                    window.open(anime.url, '_blank');
+                });
+                card.classList.add('cursor-pointer');
+            }
+
+            return card;
+        }
+
+        // Main analysis function
+        async function analyzeMALProfile(username) {
+            const analyzer = new MALAnalyzer(username);
+
+            try {
+                await analyzer.fetchUserAnimeList();
+
+                // Feature 1: Top 5 most watched genres
+                const topGenres = analyzer.getMostWatchedGenres();
+
+                // Feature 2: Shows with perfect 10 rating
+                const perfectShows = analyzer.getPerfectlyRatedShows();
+
+                // Feature 3: Top shows from most watched genres
+                const topShowsByGenre = await analyzer.getTopShowsByGenres();
+
+                // Additional Feature: Personalized recommendations
+                const recommendations = await analyzer.getPersonalizedRecommendations();
+
+                return {
+                    username,
+                    topGenres,
+                    perfectShows,
+                    topShowsByGenre,
+                    recommendations,
+                    recentlyWatched: analyzer.getRecentlyWatched()
+                };
+            } catch (error) {
+                console.error("Error analyzing profile:", error);
+                throw error;
+            }
+        }
+
+        // UI controller
+        document.addEventListener('DOMContentLoaded', () => {
+            const analyzeButton = document.getElementById('analyze');
+            const usernameInput = document.getElementById('username');
+            const loadingSection = document.getElementById('loading');
+            const resultsSection = document.getElementById('results');
+            const errorSection = document.getElementById('error');
+
+            analyzeButton.addEventListener('click', async () => {
+                const username = usernameInput.value.trim();
+                if (!username) {
+                    errorSection.textContent = 'Please enter a valid username';
+                    errorSection.classList.remove('hidden');
+                    return;
+                }
+
+                // Reset UI
+                errorSection.classList.add('hidden');
+                resultsSection.classList.add('hidden');
+                loadingSection.classList.remove('hidden');
+
+                try {
+                    const data = await analyzeMALProfile(username);
+
+                    // Update username display
+                    document.getElementById('username-display').textContent = `Analysis for ${username}`;
+
+                    // Populate Recently Watched
+                    const recentlyWatchedContainer = document.getElementById('recently-watched');
+                    recentlyWatchedContainer.innerHTML = '';
+                    if (data.recentlyWatched.length > 0) {
+                        data.recentlyWatched.forEach(anime => {
+                            recentlyWatchedContainer.appendChild(createAnimeCard(anime));
+                        });
+                    } else {
+                        recentlyWatchedContainer.innerHTML = '<p class="col-span-5 text-center p-4">No recently watched anime found</p>';
+                    }
+
+                    // Populate Top Genres
+                    const genreStatsContainer = document.getElementById('genre-stats');
+                    genreStatsContainer.innerHTML = '';
+                    if (data.topGenres.length > 0) {
+                        const genreList = document.createElement('ul');
+                        genreList.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
+
+                        data.topGenres.forEach(genre => {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'flex justify-between items-center bg-white p-3 rounded shadow';
+                            listItem.innerHTML = `
+                <span class="font-medium">${genre.genre}</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">${genre.count} anime</span>
+              `;
+                            genreList.appendChild(listItem);
+                        });
+
+                        genreStatsContainer.appendChild(genreList);
+                    } else {
+                        genreStatsContainer.innerHTML = '<p class="text-center p-4">No genre data found</p>';
+                    }
+
+                    // Populate Perfect Shows
+                    const perfectShowsContainer = document.getElementById('perfect-shows');
+                    perfectShowsContainer.innerHTML = '';
+                    if (data.perfectShows.length > 0) {
+                        data.perfectShows.forEach(anime => {
+                            perfectShowsContainer.appendChild(createAnimeCard(anime));
+                        });
+                    } else {
+                        perfectShowsContainer.innerHTML = '<p class="col-span-5 text-center p-4">No shows rated 10/10</p>';
+                    }
+
+                    // Setup Genre Selector
+                    const genreSelector = document.getElementById('genre-selector');
+                    const genreShowcase = document.getElementById('genre-showcase');
+
+                    // Clear previous options
+                    while (genreSelector.options.length > 1) {
+                        genreSelector.remove(1);
+                    }
+
+                    // Add new options
+                    data.topShowsByGenre.topGenres.forEach(genre => {
+                        const option = document.createElement('option');
+                        option.value = genre;
+                        option.textContent = genre;
+                        genreSelector.appendChild(option);
+                    });
+
+                    // Setup genre selector change event
+                    genreSelector.addEventListener('change', () => {
+                        const selectedGenre = genreSelector.value;
+                        genreShowcase.innerHTML = '';
+
+                        if (!selectedGenre) return;
+
+                        const shows = data.topShowsByGenre.showsByGenre[selectedGenre] || [];
+
+                        if (shows.length > 0) {
+                            shows.forEach(anime => {
+                                genreShowcase.appendChild(createAnimeCard(anime));
+                            });
+                        } else {
+                            genreShowcase.innerHTML = '<p class="col-span-5 text-center p-4">No data available for this genre</p>';
+                        }
+                    });
+
+                    // Populate Recommendations
+                    const recommendationsContainer = document.getElementById('recommendations');
+                    recommendationsContainer.innerHTML = '';
+                    if (data.recommendations.length > 0) {
+                        data.recommendations.forEach(anime => {
+                            recommendationsContainer.appendChild(createAnimeCard(anime));
+                        });
+                    } else {
+                        recommendationsContainer.innerHTML = '<p class="col-span-5 text-center p-4">No recommendations available</p>';
+                    }
+
+                    // Show results
+                    loadingSection.classList.add('hidden');
+                    resultsSection.classList.remove('hidden');
+                } catch (error) {
+                    loadingSection.classList.add('hidden');
+                    errorSection.textContent = `Error: ${error.message}`;
+                    errorSection.classList.remove('hidden');
+                }
+            });
+
+            // Allow form submission with Enter key
+            usernameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    analyzeButton.click();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
